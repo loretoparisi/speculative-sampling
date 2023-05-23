@@ -34,9 +34,9 @@ def autoregressive_sampling(x, model, N):
 
     return x
 
-def decode(tokens, model):
+def completion(tokens, model):
     ''''
-        decode tokens to text
+        predict tokens
     '''
     p = model(tokens)
     return p
@@ -47,6 +47,13 @@ def encode(prompt, encoder):
     '''
     input_ids = encoder.encode(prompt)
     return input_ids
+
+def decode(output_ids, encoder):
+    '''
+        decode tokens to text
+    '''
+    text = encoder.decode(output_ids)
+    return text
 
 def speculative_sampling(x, draft_model, target_model, N, K):
     # NOTE: paper indexes arrays starting from 1, python indexes from 0, so
@@ -59,11 +66,11 @@ def speculative_sampling(x, draft_model, target_model, N, K):
             # Step 1: auto-regressive decode K tokens from draft model and get final p
             x_draft = x
             for _ in range(K):
-                p = decode(x_draft, draft_model)
+                p = completion(x_draft, draft_model)
                 x_draft = np.append(x_draft, sample(p[-1]))
 
             # Step 2: target model forward passes on x_draft
-            q = decode(x_draft, target_model)
+            q = completion(x_draft, target_model)
 
             # Step 3: append draft tokens based on rejection criterion and resample
             # a token on rejection
@@ -130,7 +137,7 @@ def main(
     def run_sampling_fn(decode_fn, input_ids, **kwargs):
         start = time.perf_counter()
         output_ids = decode_fn(x=input_ids, **kwargs)
-        text = encoder.decode(output_ids)
+        text = decode(output_ids,encoder)
         elapsed_time = time.perf_counter() - start
         return text, elapsed_time
 
