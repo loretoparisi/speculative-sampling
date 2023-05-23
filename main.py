@@ -34,6 +34,9 @@ def autoregressive_sampling(x, model, N):
 
     return x
 
+def decode(tokens, model):
+    p = model(tokens)
+    return p
 
 def speculative_sampling(x, draft_model, target_model, N, K):
     # NOTE: paper indexes arrays starting from 1, python indexes from 0, so
@@ -46,11 +49,11 @@ def speculative_sampling(x, draft_model, target_model, N, K):
             # Step 1: auto-regressive decode K tokens from draft model and get final p
             x_draft = x
             for _ in range(K):
-                p = draft_model(x_draft)
+                p = decode(x_draft, draft_model)
                 x_draft = np.append(x_draft, sample(p[-1]))
 
             # Step 2: target model forward passes on x_draft
-            q = target_model(x_draft)
+            q = decode(x_draft, target_model)
 
             # Step 3: append draft tokens based on rejection criterion and resample
             # a token on rejection
