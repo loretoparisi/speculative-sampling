@@ -35,8 +35,18 @@ def autoregressive_sampling(x, model, N):
     return x
 
 def decode(tokens, model):
+    ''''
+        decode tokens to text
+    '''
     p = model(tokens)
     return p
+
+def encode(prompt, encoder):
+    '''
+        encode text to tokens
+    '''
+    input_ids = encoder.encode(prompt)
+    return input_ids
 
 def speculative_sampling(x, draft_model, target_model, N, K):
     # NOTE: paper indexes arrays starting from 1, python indexes from 0, so
@@ -115,7 +125,7 @@ def main(
     target_model = create_model_fn(target_params, target_hparams)
 
     # encode inputs
-    input_ids = encoder.encode(prompt)
+    input_ids = encode(prompt, encoder)
 
     def run_sampling_fn(decode_fn, input_ids, **kwargs):
         start = time.perf_counter()

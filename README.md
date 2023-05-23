@@ -9,12 +9,7 @@ Tested on `Python 3.9.10`.
 
 **Usage**:
 ```python
-python speculative_sampling.py \
-    --prompt "Alan Turing theorized that computers would one day become" \
-    --n_tokens_to_generate 40 \
-    --draft_model_size "124M" \
-    --target_model_size "1558M" \
-    --K 4
+python main.py --prompt "The United States invaded Russia and" -n_tokens_to_generate 20  --draft_model_size "124M" --target_model_size "1558M" --K 4 --models_dir '/Volumes/Crucial X6/Develop/models'
 ```
 
 Which outputs:
